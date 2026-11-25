@@ -1174,14 +1174,6 @@ ggml_metal_device_t ggml_metal_device_init(int device, int n_devices) {
                     dev->props.has_tensor = false;
                 }
 
-#if !GGML_METAL_EMBED_LIBRARY
-                // default.metallib has no tensor kernels, so tensor dispatch would use the wrong tile sizes
-                if (dev->props.has_tensor) {
-                    GGML_LOG_INFO("%s: tensor API disabled - precompiled metal library has no tensor kernels\n", __func__);
-                    dev->props.has_tensor = false;
-                }
-#endif
-
                 // note: disable the tensor API by default for old chips because with the current implementation it is not useful
                 // - M2 Ultra:   ~5% slower
                 // - M4, M4 Max: no significant difference
