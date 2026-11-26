@@ -1174,6 +1174,17 @@ ggml_metal_device_t ggml_metal_device_init(int device, int n_devices) {
                     dev->props.has_tensor = false;
                 }
 
+#if !GGML_METAL_EMBED_LIBRARY
+                // ggml-tensor.metallib is built for OS 26.2 (see CMakeLists.txt)
+                if (dev->props.has_tensor) {
+                    if (@available(macOS 26.2, iOS 26.2, *)) {
+                    } else {
+                        GGML_LOG_INFO("%s: tensor API disabled - precompiled metal library needs OS 26.2\n", __func__);
+                        dev->props.has_tensor = false;
+                    }
+                }
+#endif
+
                 // note: disable the tensor API by default for old chips because with the current implementation it is not useful
                 // - M2 Ultra:   ~5% slower
                 // - M4, M4 Max: no significant difference
